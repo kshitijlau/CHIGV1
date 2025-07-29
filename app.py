@@ -51,7 +51,7 @@ This paragraph MUST begin with the exact sentence: "As part of the assessment ce
 
 First, elaborate on the strengths (scores 4-5).
 
-After discussing the clear strengths, address any potential strengths (score 3). Frame these as solid skills that can be leveraged even further. Substantiate the potential by briefly mentioning how it was observed.
+After discussing the clear strengths, address any potential strengths (score 3). Frame these as solid skills that can be leveraged even further. Substantiate the potential by briefly mentioning the specific behaviors that were observed (e.g., "demonstrating an understanding of their individual needs," "breaking down objectives into actionable steps").
 
 All competency names MUST be capitalized (e.g., Plans and Thinks Strategically).
 
@@ -81,7 +81,7 @@ Language: Use impactful, professional action verbs (e.g., "exhibit," "demonstrat
 Narrative Flow: Create an integrated narrative. Use transition words and connecting phrases (In conjunction with, Coupled with, Building on this, Similarly) to link ideas between competencies. Do not simply list each competency; synthesize the results into a cohesive summary.
 
 THINGS TO REMEMBER
-NO specific development actions (e.g., "take a course on X"). Suggest the area of focus, not the method.
+NO specific development actions (e.g., "take a course on X"). Suggest the area of focus or type of action (e.g., "exploring different problem-solving methodologies"), not the literal method.
 
 NO reference to technical or industry-specific details. The summary is purely on the behavioural indicators.
 
@@ -92,7 +92,7 @@ Even when no specific strengths are identified (see Special Cases), the report m
 SPECIAL CASES (CRITICAL)
 If no competency scores are above 2: The summary should treat all competencies as development areas. Only generate the second paragraph, starting with the standard developmental sentence. Be sure to explain the "why" for each point.
 
-If all competency scores are 3: Treat all competencies as potential areas of effectiveness. The first paragraph should substantiate the potential observed. The second paragraph must provide concrete ways to deepen these competencies, connecting them to tangible business outcomes.
+If all competency scores are 3: Treat all competencies as potential areas of effectiveness. The first paragraph should substantiate the potential observed with behavioral details. The second paragraph must provide specific, actionable development suggestions (e.g., exploring specific frameworks, cultivating a proactive approach) and connect them to tangible business outcomes.
 
 If no competency scores are below 4: Treat all competencies as strengths. The second paragraph must be re-framed to be more concrete and focus on leadership amplification. It should suggest how to leverage these strengths further to role-model behaviors, mentor others, or enhance their organizational impact.
 
@@ -153,7 +153,7 @@ As part of the assessment center, you displayed strengths across all competencie
 
 Overall, your consistent demonstration of these competencies positions you as a highly effective leader and a role model for others. Continuing to leverage and role model these strengths will further enhance your influence and impact within your organization.
 
-Example 4: Tie Scores Profile (Revised)
+Example 4: Tie Scores Profile (NEWLY REVISED)
 Input:
 
 Candidate Name: D
@@ -164,9 +164,14 @@ Competencies:
 - Manages Change: 3
 
 Output:
-As part of the assessment center, you displayed a solid foundation across all key competencies, reflecting your innate potential to develop these behavioral capabilities further. In Leads Inspirationally, you show the capacity to foster an inclusive environment and build positive relationships. In Manages and Solves Problems, you demonstrate a natural aptitude for analyzing issues and identifying solutions. In Plans and Thinks Strategically, you exhibit an emerging awareness of organizational priorities and their connection to individual tasks as you have demonstrated your ability to break down objectives into actions while planning and prioritize effectively. Additionally, your capacity to Manage Change suggests an openness to organizational transitions and a willingness to adapt.
+As part of the assessment center, you displayed a solid foundation across all key competencies, reflecting your innate potential to develop these behavioral capabilities further. In Leads Inspirationally, you show the capacity to foster an inclusive environment and build positive relationships with your team members, demonstrating an understanding of their individual needs and motivations. In Manages and Solves Problems, you demonstrate a natural aptitude for analyzing issues, identifying root causes, and exploring potential solutions. In Plans and Thinks Strategically, you exhibit an emerging awareness of organizational priorities and their connection to individual tasks as you have demonstrated your ability to break down objectives into actionable steps while planning and prioritizing effectively. Additionally, your capacity to Manage Change suggests an openness to organizational transitions and a willingness to adapt to new circumstances and processes.
 
-Developmentally, you can deepen these competencies by engaging in targeted opportunities such as in Leads Inspirationally where you could strengthen your influence and communication using diverse communication techniques. This enhances your effectiveness as a leader to ensure clarity and collaboration amongst teams. In Manages and Solves Problems, adopting more diverse and efficient methods to collect information will further develop your strength to identify solutions to problems. As for Plans and Thinks Strategically, expanding your external awareness and long-term vision in Plans and Thinks Strategically allows you to contribute to the organization's sustainability and competetiveness in the market.Additionally, when Managing Change, consider cultivating a more confident and proactive approach when implementing change programs and ensure you are driving the program while getting teams' buy-in. Focusing on these areas will position you as a more effective leader in navigating organizational transitions and fostering a culture of continuous improvement.
+Developmentally, you can deepen these competencies by engaging in targeted opportunities for growth. In Leads Inspirationally, strengthening your communication skills through active listening and providing constructive feedback will enhance your influence and create a more collaborative team environment. In Manages and Solves Problems, exploring different problem-solving methodologies and decision-making frameworks will further develop your ability to identify and implement effective solutions. As for Plans and Thinks Strategically, expanding your external awareness and incorporating long-term vision into your planning will allow you to contribute more strategically to the organization's success. Additionally, when Managing Change, cultivating a more proactive approach by anticipating potential challenges and developing strategies to mitigate them will enhance your ability to lead and support others through periods of transition. Focusing on these areas will position you as a more effective leader, capable of driving positive change and achieving organizational goals.
+
+
+
+
+
 """
 
 
