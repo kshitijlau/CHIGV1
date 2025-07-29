@@ -182,7 +182,7 @@ def get_gemini_model():
             return None
         genai.configure(api_key=api_key)
         # Use the latest stable 1.5 Pro model
-        return genai.GenerativeModel('gemini-1.5-pro-latest')
+        return genai.GenerativeModel('gemini-2.5-pro')
     except Exception as e:
         st.error(f"Error initializing the AI model: {e}", icon="🚨")
         return None
