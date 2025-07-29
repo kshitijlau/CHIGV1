@@ -177,7 +177,8 @@ def get_gemini_model():
             st.error("GEMINI_API_KEY secret is not set. Please add it to your Streamlit Cloud secrets.", icon="🔑")
             return None
         genai.configure(api_key=api_key)
-        return genai.GenerativeModel('gemini-pro')
+        # Use the latest stable 1.5 Pro model
+        return genai.GenerativeModel('gemini-1.5-pro-latest')
     except Exception as e:
         st.error(f"Error initializing the AI model: {e}", icon="🚨")
         return None
