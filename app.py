@@ -16,7 +16,7 @@ st.set_page_config(
 # This is the full, untrimmed prompt, incorporating all rules and examples.
 MASTER_PROMPT = """
 ### ROLE
-You are an expert Talent Assessment Analyst at "MTE". Your name is "Aura," and your purpose is to synthesize competency score data into insightful, objective, and developmental executive summaries. You write in American English, and you are a master of the assessment framework, adhering strictly to the interpretation guidelines provided below.
+You are an expert Talent Assessment Analyst at "Your Assessment Company". Your name is "Aura," and your purpose is to synthesize competency score data into insightful, objective, and developmental executive summaries. You write in American English, and you are a master of the assessment framework, adhering strictly to the interpretation guidelines provided below.
 
 ### CONTEXT
 We are an assessment platform that evaluates candidates on a set of core competencies using a 1-5 scoring scale. Your task is to automate the creation of the executive summary that is shared with the candidate. The summary must be objective, constructive, evidence-based (tied directly to the scores), and written in a formal, professional tone consistent with our brand. The goal is to provide clear feedback on strengths and developmental areas.
@@ -171,12 +171,15 @@ Developmentally, you can deepen these competencies by engaging in targeted oppor
 def get_gemini_model():
     """Initializes and returns the Gemini Pro model."""
     try:
-        api_key = st.secrets["GOOGLE_API_KEY"]
+        # This is more robust for deployment
+        api_key = st.secrets.get("GOOGLE_API_KEY")
+        if not api_key:
+            st.error("GOOGLE_API_KEY secret is not set. Please add it to your Streamlit Cloud secrets.", icon="🔑")
+            return None
         genai.configure(api_key=api_key)
         return genai.GenerativeModel('gemini-pro')
     except Exception as e:
         st.error(f"Error initializing the AI model: {e}", icon="🚨")
-        st.error("Please ensure your GOOGLE_API_KEY is set in your Streamlit secrets.", icon="🔑")
         return None
 
 def generate_summary(model, candidate_data, competency_cols):
@@ -187,43 +190,34 @@ def generate_summary(model, candidate_data, competency_cols):
     # Format the candidate's scores into a string for the prompt
     competency_str = "\n".join([f"- {col}: {candidate_data[col]}" for col in competency_cols])
     
-    # This is the final prompt sent to the API, combining the master prompt with the specific candidate data
-    final_prompt = f"""
-{MASTER_PROMPT}
-
-Here is the data for the candidate you need to analyze:
-
-```
-Candidate Name: {candidate_data['Candidate Name']}
-Competencies:
-{competency_str}
-```
-"""
+    # This is the final prompt sent to the API
+    final_prompt = f"{MASTER_PROMPT}\n\nHere is the data for the candidate you need to analyze:\n\n```\nCandidate Name: {candidate_data['Candidate Name']}\nCompetencies:\n{competency_str}\n```"
     
     try:
-        # Set generation config for safety
-        generation_config = genai.types.GenerationConfig(
-            candidate_count=1,
-            temperature=0.7 
-        )
+        generation_config = genai.types.GenerationConfig(candidate_count=1, temperature=0.7)
         safety_settings = {
             'HARM_CATEGORY_HARASSMENT': 'BLOCK_NONE',
             'HARM_CATEGORY_HATE_SPEECH': 'BLOCK_NONE',
             'HARM_CATEGORY_SEXUALLY_EXPLICIT': 'BLOCK_NONE',
             'HARM_CATEGORY_DANGEROUS_CONTENT': 'BLOCK_NONE'
         }
-
-        response = model.generate_content(
-            final_prompt,
-            generation_config=generation_config,
-            safety_settings=safety_settings
-        )
+        response = model.generate_content(final_prompt, generation_config=generation_config, safety_settings=safety_settings)
         return response.text.strip()
     except Exception as e:
         return f"An error occurred while generating the summary: {e}"
 
-# --- Streamlit App UI ---
+# --- Initialize Session State ---
+if 'data_loaded' not in st.session_state:
+    st.session_state.data_loaded = False
+if 'df' not in st.session_state:
+    st.session_state.df = None
+if 'name_col' not in st.session_state:
+    st.session_state.name_col = ''
+if 'competency_cols' not in st.session_state:
+    st.session_state.competency_cols = []
 
+
+# --- Streamlit App UI ---
 st.title("✍️ AI Executive Summary Generator")
 st.markdown("This tool uses AI to create professional executive summaries based on candidate competency scores. Please upload an Excel file to begin.")
 
@@ -231,14 +225,10 @@ st.markdown("This tool uses AI to create professional executive summaries based 
 with st.sidebar:
     st.header("📋 Instructions")
     st.markdown("""
-    1.  **Prepare Your Excel File:**
-        - It must have a `Candidate Name` column.
-        - It needs separate columns for each competency: `Leads Inspirationally`, `Manages and Solves Problems`, `Plans and Thinks Strategically`, and `Manages Change`.
-        - See the sample file format for reference.
-    2.  **Upload the file** using the uploader in the main panel.
-    3.  **Verify Columns:** Ensure the app correctly identifies the name and competency columns.
-    4.  **Generate:** Click the 'Generate Executive Summaries' button.
-    5.  **Review & Download:** The results will appear in a table, which you can download as a CSV file.
+    1.  **Prepare & Upload File:** Create an Excel file (.xlsx) with columns for `Candidate Name` and the four competencies. Upload it below.
+    2.  **Verify Columns:** Use the form to confirm the correct columns for names and scores, then click 'Confirm Selections'.
+    3.  **Generate:** Click the 'Generate Executive Summaries' button that appears.
+    4.  **Review & Download:** The results will appear in a table, ready for download as a CSV file.
     """)
     st.info("Your Google API Key is securely managed via Streamlit secrets.", icon="ℹ️")
 
@@ -251,13 +241,15 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
     try:
+        # Load data and store in session state to persist it
         df = pd.read_excel(uploaded_file)
+        st.session_state.df = df
         st.success("✅ File uploaded successfully!")
         
         st.subheader("1. Verify Data Columns")
         st.markdown("Please confirm that the columns from your file are correctly identified below.")
         
-        all_cols = df.columns.tolist()
+        all_cols = st.session_state.df.columns.tolist()
         
         # Automatically find the name and competency columns based on expected names
         default_name_col = 'Candidate Name' if 'Candidate Name' in all_cols else all_cols[0]
@@ -280,52 +272,68 @@ if uploaded_file is not None:
             if not competency_cols:
                 st.warning("⚠️ Please select at least one competency column.")
             else:
-                st.subheader("2. Review Uploaded Data")
-                st.dataframe(df[[name_col] + competency_cols])
-
-                st.subheader("3. Generate Summaries")
-                if st.button("✨ Generate Executive Summaries", type="primary"):
-                    model = get_gemini_model()
-                    if model:
-                        summaries = []
-                        progress_bar = st.progress(0, text="Initializing generation...")
-                        
-                        total_rows = len(df)
-                        for i, row in df.iterrows():
-                            # For the function, ensure the name column is what it expects
-                            temp_row = row.rename({name_col: 'Candidate Name'})
-                            
-                            status_text = f"Processing candidate: {row[name_col]} ({i+1}/{total_rows})"
-                            progress_bar.progress((i + 1) / total_rows, text=status_text)
-                            
-                            summary = generate_summary(model, temp_row, competency_cols)
-                            summaries.append(summary)
-                            
-                            # A small delay to be kind to the API
-                            time.sleep(1) 
-                        
-                        progress_bar.progress(1.0, text="✅ Generation complete!")
-                        df['Executive Summary'] = summaries
-                        
-                        st.subheader("4. Results")
-                        st.dataframe(df)
-                        
-                        # Convert DataFrame to CSV in-memory for download
-                        output = io.BytesIO()
-                        # Use to_csv for better compatibility
-                        df.to_csv(output, index=False, encoding='utf-8-sig')
-                        csv_data = output.getvalue()
-
-                        st.download_button(
-                            label="📥 Download Results as CSV",
-                            data=csv_data,
-                            file_name='Executive_Summaries_Output.csv',
-                            mime='text/csv',
-                        )
+                # Store selections in session state
+                st.session_state.name_col = name_col
+                st.session_state.competency_cols = competency_cols
+                st.session_state.data_loaded = True
 
     except Exception as e:
-        st.error(f"An error occurred: {e}", icon="🚨")
+        st.error(f"An error occurred while loading the file: {e}", icon="�")
         st.error("Please ensure your Excel file is formatted correctly and not corrupted.")
-else:
-    st.info("Awaiting Excel file upload...")
+        st.session_state.data_loaded = False # Reset state on error
 
+# This block now runs independently of the form submission, checking session state instead
+if st.session_state.data_loaded:
+    st.subheader("2. Review Uploaded Data")
+    st.dataframe(st.session_state.df[[st.session_state.name_col] + st.session_state.competency_cols])
+
+    st.subheader("3. Generate Summaries")
+    if st.button("✨ Generate Executive Summaries", type="primary"):
+        model = get_gemini_model()
+        if model:
+            # Use data from session state
+            df_to_process = st.session_state.df.copy()
+            name_col = st.session_state.name_col
+            competency_cols = st.session_state.competency_cols
+            
+            summaries = []
+            progress_bar = st.progress(0, text="Initializing generation...")
+            
+            total_rows = len(df_to_process)
+            for i, row in df_to_process.iterrows():
+                # For the function, ensure the name column is what it expects
+                temp_row = row.rename({name_col: 'Candidate Name'})
+                
+                status_text = f"Processing candidate: {row[name_col]} ({i+1}/{total_rows})"
+                progress_bar.progress((i + 1) / total_rows, text=status_text)
+                
+                summary = generate_summary(model, temp_row, competency_cols)
+                summaries.append(summary)
+                
+                time.sleep(1) # A small delay to be kind to the API
+            
+            progress_bar.progress(1.0, text="✅ Generation complete!")
+            df_to_process['Executive Summary'] = summaries
+            
+            st.subheader("4. Results")
+            st.dataframe(df_to_process)
+            
+            # Convert DataFrame to CSV in-memory for download
+            output = io.BytesIO()
+            df_to_process.to_csv(output, index=False, encoding='utf-8-sig')
+            csv_data = output.getvalue()
+
+            st.download_button(
+                label="📥 Download Results as CSV",
+                data=csv_data,
+                file_name='Executive_Summaries_Output.csv',
+                mime='text/csv',
+            )
+
+if uploaded_file is None:
+    st.info("Awaiting Excel file upload...")
+    # Clear state if file is removed
+    for key in ['data_loaded', 'df', 'name_col', 'competency_cols']:
+        if key in st.session_state:
+            del st.session_state[key]
+�
