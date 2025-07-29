@@ -336,4 +336,3 @@ if uploaded_file is None:
     for key in ['data_loaded', 'df', 'name_col', 'competency_cols']:
         if key in st.session_state:
             del st.session_state[key]
-�
