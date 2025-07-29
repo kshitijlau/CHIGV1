@@ -172,9 +172,9 @@ def get_gemini_model():
     """Initializes and returns the Gemini Pro model."""
     try:
         # This is more robust for deployment
-        api_key = st.secrets.get("GOOGLE_API_KEY")
+        api_key = st.secrets.get("GEMINI_API_KEY")
         if not api_key:
-            st.error("GOOGLE_API_KEY secret is not set. Please add it to your Streamlit Cloud secrets.", icon="🔑")
+            st.error("GEMINI_API_KEY secret is not set. Please add it to your Streamlit Cloud secrets.", icon="🔑")
             return None
         genai.configure(api_key=api_key)
         return genai.GenerativeModel('gemini-pro')
@@ -230,7 +230,7 @@ with st.sidebar:
     3.  **Generate:** Click the 'Generate Executive Summaries' button that appears.
     4.  **Review & Download:** The results will appear in a table, ready for download as a CSV file.
     """)
-    st.info("Your Google API Key is securely managed via Streamlit secrets.", icon="ℹ️")
+    st.info("Your API Key is securely managed via Streamlit secrets.", icon="ℹ️")
 
 # File Uploader
 uploaded_file = st.file_uploader(
@@ -278,7 +278,7 @@ if uploaded_file is not None:
                 st.session_state.data_loaded = True
 
     except Exception as e:
-        st.error(f"An error occurred while loading the file: {e}", icon="�")
+        st.error(f"An error occurred while loading the file: {e}", icon="🚨")
         st.error("Please ensure your Excel file is formatted correctly and not corrupted.")
         st.session_state.data_loaded = False # Reset state on error
 
